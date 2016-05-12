@@ -1,0 +1,3 @@
+src/mumble/Mumble.proto, is provided by the Mumble project. src/mumble/LICENSE and src/mumble/AUTHORS include the license and copyright information for this file.
+
+src/mumble/mod.rs is generated from src/mumble/Mumble.proto with protoc and protoc-gen-rust.
