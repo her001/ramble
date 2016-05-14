@@ -6,6 +6,6 @@ mod mumble;
 
 pub mod identity;
 
-pub fn connect() {}
+pub fn connect(url: &str, ident: &identity::Identity) {}
 
 pub fn send_message() {}
