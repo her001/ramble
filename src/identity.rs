@@ -1,8 +1,8 @@
-use std::fs::File;
+use std::path::PathBuf;
 
 pub struct Identity {
 	name: String,
-	cert: File,
-	key: File,
+	cert: PathBuf,
+	key: PathBuf,
 	comment: String,
 }
