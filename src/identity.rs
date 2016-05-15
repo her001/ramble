@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 pub struct Identity {
-	name: String,
-	cert: PathBuf,
-	key: PathBuf,
-	comment: String,
+	pub name: String,
+	pub cert: PathBuf,
+	pub key: PathBuf,
+	pub comment: String,
 }
