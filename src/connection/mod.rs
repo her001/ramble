@@ -21,6 +21,7 @@ impl Connection {
 		try!(context.set_certificate_file(&id.cert, X509FileType::PEM));
 		try!(context.set_private_key_file(&id.key, X509FileType::PEM));
 		try!(context.check_private_key());
+		try!(context.set_cipher_list("EECDH+AESGCM:EDH+aRSA+AESGCM:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:AES256-SHA:AES128-SHA"));
 		let stream = try!(TcpStream::connect(srv));
 		let tls_stream = try!(SslStream::connect(&context, stream));
 		
