@@ -20,9 +20,9 @@ use ramble::identity::Identity;
 #[test]
 fn connect() {
 	let mut cert_path = PathBuf::new();
-	cert_path.push("cert.pem");
+	cert_path.push("tests/test_cert.pem");
 	let mut key_path = PathBuf::new();
-	key_path.push("key.pem");
+	key_path.push("tests/test_key.pem");
 	
 	let ident = Identity {
 		name: "Test".to_string(),
