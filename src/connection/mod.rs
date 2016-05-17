@@ -1,5 +1,7 @@
+use mumble;
 use openssl::ssl::{SslContext, SslMethod, SslStream};
 use openssl::x509::X509FileType;
+use protobuf::core::Message;
 use std::net::{TcpStream, SocketAddr, ToSocketAddrs};
 
 use identity::Identity;
@@ -25,12 +27,26 @@ impl Connection {
 		let stream = try!(TcpStream::connect(srv));
 		let tls_stream = try!(SslStream::connect(&context, stream));
 		
-		//mumble auth
-		
-		Ok(Connection {
+		let mut con = Connection {
 			server: srv,
 			ident: id,
 			tcp: tls_stream,
-		})
+		};
+		
+		let mut message = mumble::Version::new();
+		message.set_version(0130);
+		message.set_release("Ramble".to_string());
+		try!(con.write_message(message));
+		
+		let mut message = mumble::Authenticate::new();
+		message.set_username(con.ident.name.clone());
+		try!(con.write_message(message));
+		
+		Ok(con)
+	}
+	
+	fn write_message<T: Message>(&mut self, msg: T) -> Result<(), Error> {
+		try!(msg.write_to_writer(&mut self.tcp));
+		Ok(())
 	}
 }
