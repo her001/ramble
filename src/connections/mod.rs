@@ -14,51 +14,87 @@ use mumble;
 use openssl::ssl::{SslContext, SslMethod, SslStream};
 use openssl::x509::X509FileType;
 use protobuf::core::Message;
+use protobuf::repeated::RepeatedField;
 use std::net::{TcpStream, SocketAddr, ToSocketAddrs};
 
 use identity::Identity;
-use connection::error::Error;
+use connections::error::Error;
 
 pub mod error;
 
 pub struct Connection {
-	pub server: SocketAddr,
-	pub ident: Identity,
+	server: SocketAddr,
+	ssl_context: SslContext,
 	tcp: SslStream<TcpStream>,
 }
 
 impl Connection {
-	pub fn join_server<T: ToSocketAddrs>(srv: T, id: Identity) -> Result<Connection, Error> {
+	pub fn connect<T: ToSocketAddrs>(srv: T) -> Result<Connection, Error> {
 		let mut srv = try!(srv.to_socket_addrs());
 		let srv = srv.next().unwrap();
 		let mut context: SslContext = try!(SslContext::new(SslMethod::Tlsv1));
-		try!(context.set_certificate_file(&id.cert, X509FileType::PEM));
-		try!(context.set_private_key_file(&id.key, X509FileType::PEM));
-		try!(context.check_private_key());
 		try!(context.set_cipher_list("EECDH+AESGCM:EDH+aRSA+AESGCM:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:AES256-SHA:AES128-SHA"));
-		let stream = try!(TcpStream::connect(srv));
-		let tls_stream = try!(SslStream::connect(&context, stream));
+		let tls_stream = try!(tcp_connect(srv, &context));
 		
-		let mut con = Connection {
+		let con = Connection {
 			server: srv,
-			ident: id,
+			ssl_context: context,
 			tcp: tls_stream,
+		};
+		
+		Ok(con)
+	}
+}
+
+pub struct JoinedConnection {
+	server: SocketAddr,
+	ssl_context: SslContext,
+	tcp: SslStream<TcpStream>,
+	identity: Identity,
+}
+
+impl JoinedConnection {
+	pub fn join(con: Connection, ident: Identity) -> Result<JoinedConnection, Error> {
+		let mut context = con.ssl_context;
+		try!(context.set_certificate_file(&ident.cert, X509FileType::PEM));
+		try!(context.set_private_key_file(&ident.key, X509FileType::PEM));
+		try!(context.check_private_key());
+		let tls_stream = try!(tcp_connect(con.server, &context));
+		
+		let mut j_con = JoinedConnection {
+			server: con.server,
+			ssl_context: context,
+			tcp: tls_stream,
+			identity: ident,
 		};
 		
 		let mut message = mumble::Version::new();
 		message.set_version(0130);
 		message.set_release("Ramble".to_string());
-		try!(con.write_message(message));
-		
+		message.set_os("Unknown".to_string());
+		message.set_os_version("Unknown".to_string());
+		try!(j_con.write_message(message));
+
 		let mut message = mumble::Authenticate::new();
-		message.set_username(con.ident.name.clone());
-		try!(con.write_message(message));
+		let mut tokens = RepeatedField::new();
+		tokens.push("".to_string());
+		message.set_username(j_con.identity.name.clone());
+		message.set_password("".to_string());
+		message.set_tokens(tokens);
+		try!(j_con.write_message(message));
 		
-		Ok(con)
+		
+		Ok(j_con)
 	}
 	
 	fn write_message<T: Message>(&mut self, msg: T) -> Result<(), Error> {
 		try!(msg.write_to_writer(&mut self.tcp));
 		Ok(())
 	}
+}
+
+fn tcp_connect(srv: SocketAddr, context: &SslContext) -> Result<SslStream<TcpStream>, Error> {
+	let stream = try!(TcpStream::connect(srv));
+	let tls_stream = try!(SslStream::connect(context, stream));
+	Ok(tls_stream)
 }
