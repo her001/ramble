@@ -14,7 +14,7 @@ extern crate ramble;
 
 use std::path::PathBuf;
 
-use ramble::connections::Connection;
+use ramble::connections::{Connection, JoinedConnection};
 use ramble::identity::Identity;
 
 #[test]
@@ -24,5 +24,35 @@ fn connect() {
 		Result::Ok(_) => (),
 		Result::Err(err) =>
 			panic!("Connection failed: {}", err),
+	}
+}
+
+#[test]
+fn connect_and_join() {
+	let con = Connection::connect("localhost:64738");
+	match con {
+		Result::Ok(_) => (),
+		Result::Err(err) =>
+			panic!("Connection failed: {}", err),
+	};
+	let con = con.unwrap();
+	
+	let mut cert_path = PathBuf::new();
+	cert_path.push("tests/test_cert.pem");
+	let mut key_path = PathBuf::new();
+	key_path.push("tests/test_key.pem");
+	
+	let ident = Identity {
+		name: "Test".to_string(),
+		cert: cert_path,
+		key: key_path,
+		comment: "Test".to_string(),
+	};
+	
+	let j_con = JoinedConnection::join(con, ident);
+	match j_con {
+		Result::Ok(_) => (),
+		Result::Err(err) =>
+			panic!("Server join failed: {}", err),
 	}
 }
