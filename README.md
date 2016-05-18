@@ -4,6 +4,10 @@
 
 Mumble client library written in Rust
 
+This is a work in progress, and probably should not be used by anyone.
+
+See the [documentation](https://her001.github.io/ramble/ramble/index.html).
+
 ## Requirements
 
 * openssl
@@ -11,3 +15,5 @@ Mumble client library written in Rust
 * opusfile
 
 * protobuf
+
+
