@@ -7,7 +7,7 @@
 cd src/mumble
 wget https://raw.githubusercontent.com/mumble-voip/mumble/master/AUTHORS -O AUTHORS
 wget https://raw.githubusercontent.com/mumble-voip/mumble/master/LICENSE -O LICENSE
-wget https://raw.githubusercontent.com/mumble-voip/mumble/master/src/Mumble.proto -O  Mumble.proto
+wget https://raw.githubusercontent.com/mumble-voip/mumble/master/src/Mumble.proto -O Mumble.proto
 
 protoc --rust_out . Mumble.proto
 mv Mumble.rs mod.rs
