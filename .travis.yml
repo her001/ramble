@@ -14,6 +14,3 @@ after_success: |
   ghp-import -n target/doc &&
   git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
 
-env:
-  global:
-  - secure: QJQZ/fWO7RAQQxozyJaEacx0kzpNI5eMNWe+5bvi8BoeAbz56x38lsVaO4p2WcBQINe/v19MXsL2MZXYOm2+aaoEaE+LzANcTtu0m5AYBQZIYp01sTkzD3p2uN/WETpfT+h9WVf7fbwH6xplR4Th8IIecMaJyfc/E8IO6Gp3AFHYsPHbOoGmTQQ6iHt5Fb0GNMo/bVWvWzAVSw1esnIj7/IdiuUcf5YD2oUdJldmnWnNEP5VmV9zjj46hCLmQ/vcYEt6kEWNpFLfGxTXTWqbeAUMv3iTh+IK8vbxp12INeQZOL2DtzlmI5ktPkEbCMl/0qheiUh+00fF8V41Id4aWS6i8RCPPKU+M1l4Ug6D4Z5eijSXL9KAlmG2HBiKbX/STx3sAOeuFNl/Ew4USm+zj5v6huv8KWSyfyIjI5L4Ti9J8uVnoydDRcUiYnc0PvQUc9QdbC2kUBNcyU0EYva+N8+oo9eY6IOFoC/rmHK/PjQCJi5dtqrzK5X1qkpBNcjd1kIALgdWmCbwhpUzJsqbwnJLJOZkeUuMUjU8JJEDVswVSJ0PhYfTQjyRqSyFtbzwGPW4d3C7859gEcWOqOD6KmUPG5MoAuypFl7O3wWjxwT/v8s5N+SiAgoJfceWZg3fidWUuCn9izF/hAL6Ed74ATMqVFmdeUjIWHcTS2jA6bI=
